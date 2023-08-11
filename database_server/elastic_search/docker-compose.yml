@@ -1,0 +1,18 @@
+version: '3.4'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - http.max_content_length=1gb
+      - cluster.max_shards_per_node=50000
+    ports:
+      - "50004:9200"
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge

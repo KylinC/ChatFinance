@@ -1,8 +1,8 @@
 from models_server.chatglm2.jina_client import encode
 from prompts import intent_recognition_prompt
-from core.prompt import entity_recognition_prompt
-from core.prompt import answer_generation_prompt
-from core.data import JinaEmbeddings
+from prompts import entity_recognition_prompt
+from prompts import answer_generation_prompt
+from prompts import JinaEmbeddings
 
 from langchain.vectorstores import Weaviate
 from elasticsearch import Elasticsearch

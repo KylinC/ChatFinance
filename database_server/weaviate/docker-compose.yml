@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+  weaviate:
+    image: semitechnologies/weaviate:1.19.5
+    ports:
+      - 8080:8080
+    restart: on-failure:0
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_APIKEY_ENABLED: 'true'
+      AUTHENTICATION_APIKEY_ALLOWED_KEYS: 'shadowmotion-secret-key,HRSSC-secret-key'
+      AUTHENTICATION_APIKEY_USERS: 'shadowmotion,HRSSC'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'none'
+      CLUSTER_HOSTNAME: 'node1'
