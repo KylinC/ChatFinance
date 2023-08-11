@@ -1,0 +1,17 @@
+accelerate==0.21.0
+auto_gptq==0.3.2
+camelot==13.04.13-gpl-pyqt
+docarray==0.21.0
+itemadapter==0.8.0
+jina==3.20.0
+langchain==0.0.261
+numpy==1.24.1
+opencc==1.1.6
+pandas==2.0.3
+peft==0.4.0
+pydantic==1.10.12
+scrapy==2.10.0
+torch==2.1.0.dev20230807+cu118
+transformers==4.31.0
+weaviate_client==3.22.1
+zhipuai==1.0.7
