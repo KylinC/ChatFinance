@@ -152,7 +152,7 @@ if __name__ == "__main__":
     # -> Init Embedding Database
     embedding = JinaEmbeddings("127.0.0.1")
     client = weaviate.Client(
-        url="http://localhost:8080",  # Replace with your endpoint
+        url="http://localhost:50003",  # Replace with your endpoint
         auth_client_secret=weaviate.AuthApiKey(api_key="shadowmotion-secret-key"))
     
     print("向量库时间：",time.time()-initial_time)

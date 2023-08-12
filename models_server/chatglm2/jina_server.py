@@ -90,9 +90,9 @@ class ChatGLM2(Executor):
     ):
         super().__init__(*args, **kwargs)
 
-        self.shadowmotion = {}
-        with open('shadowmotion.pickle', 'rb') as f:
-            self.shadowmotion["pickle"] = pickle.load(f)
+        # self.shadowmotion = {}
+        # with open('shadowmotion.pickle', 'rb') as f:
+        #     self.shadowmotion["pickle"] = pickle.load(f)
 
         if device is None:
             device = "cuda" if torch.cuda.is_available() else "cpu"

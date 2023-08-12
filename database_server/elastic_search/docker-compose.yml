@@ -12,7 +12,12 @@ services:
       - "50004:9200"
     networks:
       - elastic
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
 
 networks:
   elastic:
     driver: bridge
+
+volumes:
+  esdata:

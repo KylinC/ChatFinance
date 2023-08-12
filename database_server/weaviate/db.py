@@ -1,5 +1,5 @@
-# import sys  # noqa: E501
-# sys.path.append('/home/shadowmotion/Documents/code/demo/HRSSC')  # noqa: E501
+import sys  # noqa: E501
+sys.path.append('/home/kylin/workspace/ChatFinance')  # noqa: E501
 
 from langchain.vectorstores import Weaviate
 from utils import JinaEmbeddings
@@ -11,7 +11,7 @@ import os
 
 
 client = weaviate.Client(
-    url="http://localhost:8080",  # Replace with your endpoint
+    url="http://localhost:50003",  # Replace with your endpoint
     auth_client_secret=weaviate.AuthApiKey(api_key="shadowmotion-secret-key"))
 
 embedding = JinaEmbeddings("127.0.0.1")
@@ -70,15 +70,15 @@ def insert_table(path, uuid_dict):
 
 
 if __name__ == "__main__":
-    base_tokenizer_model = '/home/cql/workspace/others/models/text2vec-base-chinese-paraphrase'
+    base_tokenizer_model = '/home/kylin/workspace/ChatFinance/models/text2vec-base-chinese-paraphrase'
 
-    with open("/home/cql/workspace/others/download/chatglm_llm_fintech_raw_dataset/uuid.json", "r", encoding='utf-8') as f:
+    with open("/home/kylin/workspace/ChatFinance/data/chatglm_llm_fintech_raw_dataset/uuid.json", "r", encoding='utf-8') as f:
         uuid_dict = json.load(f)
 
     n = 30000
     skip = 0
 
-    TXT_DIRECTORY = "/home/cql/workspace/others/download/chatglm_llm_fintech_raw_dataset/alldata"
+    TXT_DIRECTORY = "/home/kylin/workspace/ChatFinance/data/chatglm_llm_fintech_raw_dataset/alldata"
     file_names = glob.glob(TXT_DIRECTORY + '/*')
     for i, file_name in enumerate(file_names):
         print(f"No.{i} insert_txt")
@@ -89,7 +89,7 @@ if __name__ == "__main__":
         if i >= n - 1:
             break
 
-    TAB_DIRECTORY = "/home/cql/workspace/others/download/chatglm_llm_fintech_raw_dataset/alltable"
+    TAB_DIRECTORY = "/home/kylin/workspace/ChatFinance/data/chatglm_llm_fintech_raw_dataset/alltable"
     file_names = glob.glob(TAB_DIRECTORY + '/*.cal')
     for i, file_name in enumerate(file_names):
         if i < skip:

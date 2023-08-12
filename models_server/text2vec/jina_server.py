@@ -136,7 +136,9 @@ class Text2vecEncoder(Executor):
 
 
 if __name__ == "__main__":
-    model_name = '/home/cql/workspace/others/models/text2vec-base-chinese-paraphrase'
+    import sys
+    sys.path.append("/home/kylin/workspace/ChatFinance")
+    model_name = '/home/kylin/workspace/ChatFinance/models/text2vec-base-chinese-paraphrase'
     # model_name = 'D:\\code\\llm\\embeding\\text2vec-base-chinese-paraphrase'
     port = 50001
 

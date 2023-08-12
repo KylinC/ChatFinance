@@ -1,5 +1,5 @@
 import sys  # noqa: E501
-sys.path.append("/home/cql/workspace/others/GuaranteedDelivery")  # noqa: E501
+sys.path.append("/home/kylin/workspace/ChatFinance")  # noqa: E501
 from elasticsearch import Elasticsearch
 
 import json
@@ -21,10 +21,10 @@ def attain_uuid(entities, uuid_dict):
 if __name__ == "__main__":
     es = Elasticsearch('http://localhost:50004')
 
-    with open("/home/cql/workspace/others/download/chatglm_llm_fintech_raw_dataset/uuid.json", "r") as f:
+    with open("/home/kylin/workspace/ChatFinance/data/chatglm_llm_fintech_raw_dataset/uuid.json", "r") as f:
         uuid_dict = json.load(f)
 
-    with open("../../data/test_temp/all_crawl.json", "r") as f:
+    with open("/home/kylin/workspace/ChatFinance/data/chatglm_llm_fintech_raw_dataset/allcrawl.json", "r") as f:
         crawl_dict = json.load(f)
 
     for i, company in enumerate(crawl_dict):

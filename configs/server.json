@@ -1,0 +1,17 @@
+{
+    "base_path": "/home/kylin/workspace/ChatFinance",
+    "models_path": {
+        "chatglm2-6b":"models/chatglm2-6b",
+        "text2vec-base-chinese-paraphrase":"models/text2vec-base-chinese-paraphrase"
+    },
+    "sever_path": {
+        "elastic_search":"database_server/elastic_search",
+        "weaviate":"database_server/weaviate"
+    },
+    "port": {
+        "chatglm2-6b":50002,
+        "text2vec-base-chinese-paraphrase":50001,
+        "elastic_search":50004,
+        "weaviate":50003
+    }
+}

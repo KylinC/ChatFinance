@@ -1,0 +1,15 @@
+# 如何做不同主机之间的数据迁移
+
+- 在主机A上备份
+
+docker-compose down
+docker run --rm -v esdata:/data -v $(pwd):/backup ubuntu tar czvf /backup/esdata.tar.gz /data
+
+- 拷贝
+
+scp esdata.tar.gz
+
+- 恢复数据
+
+docker run --rm -v esdata:/data -v $(pwd):/backup ubuntu tar xzvf /backup/esdata.tar.gz -C /
+

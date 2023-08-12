@@ -1,0 +1,16 @@
+# 如何做不同主机之间的数据迁移
+
+- 在主机A上备份
+
+docker-compose down
+docker run --rm -v weaviatedata:/data -v $(pwd):/backup ubuntu tar czvf /backup/weaviatedata.tar.gz /data
+
+- 拷贝
+
+scp weaviatedata.tar.gz
+
+- 恢复数据
+
+docker run --rm -v weaviatedata:/data -v $(pwd):/backup ubuntu tar xzvf /backup/weaviatedata.tar.gz -C /
+
+
