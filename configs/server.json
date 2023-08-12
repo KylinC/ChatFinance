@@ -1,5 +1,6 @@
 {
     "base_path": "/home/kylin/workspace/ChatFinance",
+    "base_python": "/home/kylin/anaconda3/envs/gml2/bin/python",
     "models_path": {
         "chatglm2-6b":"models/chatglm2-6b",
         "text2vec-base-chinese-paraphrase":"models/text2vec-base-chinese-paraphrase"

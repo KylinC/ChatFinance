@@ -1,5 +1,5 @@
-import warnings  # noqa: E501
-warnings.filterwarnings('ignore')  # noqa: E501
+import warnings  
+warnings.filterwarnings('ignore')  
 
 from jina import DocumentArray, Executor, requests, Flow
 from transformers import AutoModel, AutoTokenizer
@@ -90,9 +90,9 @@ class ChatGLM2(Executor):
     ):
         super().__init__(*args, **kwargs)
 
-        # self.shadowmotion = {}
-        # with open('shadowmotion.pickle', 'rb') as f:
-        #     self.shadowmotion["pickle"] = pickle.load(f)
+        self.pre_history = {}
+        with open('pre_history.pickle', 'rb') as f:
+            self.pre_history["pickle"] = pickle.load(f)
 
         if device is None:
             device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -108,7 +108,7 @@ class ChatGLM2(Executor):
             model_name, trust_remote_code=True)
 
     @requests
-    def chat(self, docs: DocumentArray, pre_history: bool = False, **kwargs):
+    def chat(self, docs: DocumentArray, without_history: bool = False, **kwargs):
         for doc in docs:
             prompt = doc.text
             history = doc.tags.get('history', [])
@@ -118,10 +118,10 @@ class ChatGLM2(Executor):
             if history:
                 history = json.loads(doc.tags['history'])
             else:
-                if pre_history:
+                if without_history:
                     pass
                 else:
-                    # history.append(self.shadowmotion["pickle"])
+                    history.append(self.pre_history["pickle"])
                     pass
 
             print('---------prompt----------')
