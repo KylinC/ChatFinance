@@ -1,8 +1,8 @@
 from models_server.chatglm2.jina_client import encode
-from prompts import intent_recognition_prompt
-from prompts import entity_recognition_prompt
-from prompts import answer_generation_prompt
-from prompts import JinaEmbeddings
+from prompts import intent_recognition
+from prompts import entity_recognition
+from prompts import answer_generation
+from models_server.text2vec.jina_embedding import JinaEmbeddings
 
 from langchain.vectorstores import Weaviate
 from elasticsearch import Elasticsearch
@@ -58,7 +58,7 @@ def main(question, uuid_dict, crawl_dict, crawl_name_dict, es, f):
         f.write(f"R:\n{answer}\n\n")
         return ""
     
-    print("意图识别时间：",time.time()-initial_time)
+    # print("意图识别时间：",time.time()-initial_time)
 
     # -> Entity Recognition
     f.write("= = 实体提取 = = \n")
@@ -72,7 +72,7 @@ def main(question, uuid_dict, crawl_dict, crawl_name_dict, es, f):
         f.write("未知公司不予作答\n")
         return ""
     
-    print("实体提取时间：",time.time()-initial_time)
+    # print("实体提取时间：",time.time()-initial_time)
 
     elastic_search_success = False
     extra_information_list = []
@@ -144,37 +144,36 @@ def main(question, uuid_dict, crawl_dict, crawl_name_dict, es, f):
     response = encode(prompt, history=[])
     f.write(f"R:\n{response[0].text}\n\n")
 
+
 import time
+initial_time = time.time()
 
-if __name__ == "__main__":
-    initial_time = time.time()
+# -> Init Embedding Database
+embedding = JinaEmbeddings("127.0.0.1")
+client = weaviate.Client(
+    url="http://localhost:50003",  # Replace with your endpoint
+    auth_client_secret=weaviate.AuthApiKey(api_key="shadowmotion-secret-key"))
+
+print("向量库时间：",time.time()-initial_time)
+
+# -> Init Embedding Database
+es = Elasticsearch('http://localhost:50004')
+
+print("es时间：",time.time()-initial_time)
+
+# -> Init UUID Dict
+with open("/home/cql/workspace/others/download/chatglm_llm_fintech_raw_dataset/uuid.json", "r") as f:
+    uuid_dict = json.load(f)
+
+# -> Init crawl Dict
+with open("./data/test_temp/all_crawl.json", "r") as f:
+    crawl_dict = json.load(f)
+with open("./data/test_temp/name_map_crawl.json", "r") as f:
+    crawl_name_dict = json.load(f)
     
-    # -> Init Embedding Database
-    embedding = JinaEmbeddings("127.0.0.1")
-    client = weaviate.Client(
-        url="http://localhost:50003",  # Replace with your endpoint
-        auth_client_secret=weaviate.AuthApiKey(api_key="shadowmotion-secret-key"))
-    
-    print("向量库时间：",time.time()-initial_time)
+print("dict时间：",time.time()-initial_time)
 
-    # -> Init Embedding Database
-    es = Elasticsearch('http://localhost:50004')
-    
-    print("es时间：",time.time()-initial_time)
+question = "本钢板材在2020年对联营企业和合营企业的投资收益是多少元？"
 
-    # -> Init UUID Dict
-    with open("/home/cql/workspace/others/download/chatglm_llm_fintech_raw_dataset/uuid.json", "r") as f:
-        uuid_dict = json.load(f)
-
-    # -> Init crawl Dict
-    with open("./data/test_temp/all_crawl.json", "r") as f:
-        crawl_dict = json.load(f)
-    with open("./data/test_temp/name_map_crawl.json", "r") as f:
-        crawl_name_dict = json.load(f)
-        
-    print("dict时间：",time.time()-initial_time)
-
-    question = "本钢板材在2020年对联营企业和合营企业的投资收益是多少元？"
-
-    with open("./data/test_temp/main_log.txt", "w") as f:
-        main(question, uuid_dict, crawl_dict, crawl_name_dict, es, f)
+with open("./logs/inference_main_log.txt", "w") as f:
+    main(question, uuid_dict, crawl_dict, crawl_name_dict, es, f)

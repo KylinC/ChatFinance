@@ -91,8 +91,8 @@ class ChatGLM2(Executor):
         super().__init__(*args, **kwargs)
 
         self.pre_history = {}
-        with open('pre_history.pickle', 'rb') as f:
-            self.pre_history["pickle"] = pickle.load(f)
+        # with open('pre_history.pickle', 'rb') as f:
+        #     self.pre_history["pickle"] = pickle.load(f)
 
         if device is None:
             device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -108,7 +108,7 @@ class ChatGLM2(Executor):
             model_name, trust_remote_code=True)
 
     @requests
-    def chat(self, docs: DocumentArray, without_history: bool = False, **kwargs):
+    def chat(self, docs: DocumentArray, pre_history: bool = False, **kwargs):
         for doc in docs:
             prompt = doc.text
             history = doc.tags.get('history', [])
@@ -118,10 +118,10 @@ class ChatGLM2(Executor):
             if history:
                 history = json.loads(doc.tags['history'])
             else:
-                if without_history:
+                if pre_history:
                     pass
                 else:
-                    history.append(self.pre_history["pickle"])
+                    # history.append(self.pre_history["pickle"])
                     pass
 
             print('---------prompt----------')
@@ -140,25 +140,23 @@ class ChatGLM2(Executor):
 
             print('----------end------------')
 
+with open('../../configs/server.json', 'r') as file:
+    server_config = json.load(file)
+base_path = server_config["base_path"]
+model_path = os.path.join(base_path,server_config["models_path"]["chatglm2"])
+port = server_config["port"]["chatglm2"]
+lora_path = ""
+f = Flow(port=port).add(
+    uses=ChatGLM2,
+    uses_with={
+        'model_name': model_path,
+        'lora_path': lora_path,
+        'device': 'cuda',
+        'num_gpus': 1,
+    },
+    gpus='device=0'
+)
 
-if __name__ == "__main__":
-    model_name = "/home/cql/workspace/others/models/chatglm2-6b"
-    # model_name = 'D:\\code\\llm\\chatglm\\chatglm2-6b'
-    # lora_path = 'lora'
-    lora_path = ''
-    port = 50002
-
-    f = Flow(port=port).add(
-        uses=ChatGLM2,
-        uses_with={
-            'model_name': model_name,
-            'lora_path': lora_path,
-            'device': 'cuda',
-            'num_gpus': 1,
-        },
-        gpus='device=0'
-    )
-
-    with f:
-        # start server, backend server forever
-        f.block()
+with f:
+    # start server, backend server forever
+    f.block()

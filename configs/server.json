@@ -2,16 +2,18 @@
     "base_path": "/home/kylin/workspace/ChatFinance",
     "base_python": "/home/kylin/anaconda3/envs/gml2/bin/python",
     "models_path": {
-        "chatglm2-6b":"models/chatglm2-6b",
-        "text2vec-base-chinese-paraphrase":"models/text2vec-base-chinese-paraphrase"
+        "chatglm2":"models/chatglm2-6b",
+        "text2vec":"models/text2vec-base-chinese-paraphrase"
     },
     "sever_path": {
         "elastic_search":"database_server/elastic_search",
-        "weaviate":"database_server/weaviate"
+        "weaviate":"database_server/weaviate",
+        "chatglm2":"models_server/chatglm2",
+        "text2vec":"models_server/text2vec"
     },
     "port": {
-        "chatglm2-6b":50002,
-        "text2vec-base-chinese-paraphrase":50001,
+        "chatglm2":50002,
+        "text2vec":50001,
         "elastic_search":50004,
         "weaviate":50003
     }

@@ -4,6 +4,8 @@ from typing import Dict, Optional, Tuple
 from jina import Flow
 import numpy as np
 import torch
+import os
+import json
 
 
 class Text2vecEncoder(Executor):
@@ -11,7 +13,7 @@ class Text2vecEncoder(Executor):
 
     def __init__(
             self,
-            model_name: str = '/home/cql/workspace/others/models/text2vec-base-chinese-paraphrase',
+            model_name,
             base_tokenizer_model: Optional[str] = None,
             pooling_strategy: str = 'mean',
             layer_index: int = -1,
@@ -135,22 +137,23 @@ class Text2vecEncoder(Executor):
         return input_tokens
 
 
-if __name__ == "__main__":
-    import sys
-    sys.path.append("/home/kylin/workspace/ChatFinance")
-    model_name = '/home/kylin/workspace/ChatFinance/models/text2vec-base-chinese-paraphrase'
-    # model_name = 'D:\\code\\llm\\embeding\\text2vec-base-chinese-paraphrase'
-    port = 50001
+with open('../../configs/server.json', 'r') as file:
+    server_config = json.load(file)
+base_path = server_config["base_path"]
+model_path = os.path.join(base_path,server_config["models_path"]["text2vec"])
+print(model_path)
+port = server_config["port"]["text2vec"]
+lora_path = ""
 
-    f = Flow(port=port).add(
-        uses=Text2vecEncoder,
-        uses_with={
-            'model_name': model_name,
-            'device': 'cuda',
-        },
-        gpus='device=3',
-    )
+f = Flow(port=port).add(
+    uses=Text2vecEncoder,
+    uses_with={
+        'model_name': model_path,
+        'device': 'cuda',
+    },
+    gpus='device=0',
+)
 
-    with f:
-        # start server, backend server forever
-        f.block()
+with f:
+    # start server, backend server forever
+    f.block()
