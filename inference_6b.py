@@ -2,6 +2,7 @@ from models_server.chatglm2.jina_client import encode
 from prompts.intent_recognition import intent_recognition_prompt
 from prompts.entity_recognition import entity_recognition_prompt
 from prompts.answer_generation import answer_generation_prompt
+from prompts.open_question import open_question_prompt
 from models_server.text2vec.jina_embedding import JinaEmbeddings
 
 from langchain.vectorstores import Weaviate
@@ -53,10 +54,11 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
 
     if "检索问题" not in parse_intent_recognition(response[0].text):
         log_file.write("开放问题直接作答\n")
-        response = encode(question, history=[])
+        prompt = open_question_prompt(question)
+        response = encode(prompt, history=[])
         answer = response[0].text
         log_file.write(f"R:\n{answer}\n\n")
-        return ""
+        return answer
     
     # print("意图识别时间：",time.time()-initial_time)
 
@@ -68,6 +70,10 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
     entities = parse_entity_recognition(response[0].text)
     uuid, file_name = attain_uuid(entities, uuid_dict)
     log_file.write(f"R:\n{uuid}\n\n")
+    if not uuid and entities[0][0] == '年':
+        entities[0] = entities[0][1:]
+        uuid, file_name = attain_uuid(entities, uuid_dict)
+        f.write(f"R:\n fixed company name {entities[0]}\n\n")
     if not uuid:
         log_file.write("未知公司不予作答\n")
         return ""
@@ -79,7 +85,8 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
 
     # -> ElasticSearch
     log_file.write("= = ElasticSearch = = \n")
-    index_name = f"{uuid}"
+    # index_name = f"{uuid}"
+    index_name = "all_property"
     try:
         for word in entities:
             replaced_question = question.replace(word, '')
@@ -94,18 +101,24 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
 
         search_resp = es.search(index=index_name, body=search_query)
 
-        docs = search_resp["hits"]["hits"][:3]
+        docs = search_resp["hits"]["hits"][:50]
 
+        max_try, now_try = 10, 0 
         for i, e in enumerate(docs):
-            log_file.write(
-                f"ES: = = = = = = = = = = = k[{i}] = = = = = = = = = = =\n")
-            log_file.write(e['_source']['text'])
-            log_file.write("\n")
             property_name = e['_source']['text']
             company = crawl_name_dict[file_name]
             year = file_name.split("__")[4]+"报"
             property_value = crawl_dict[company][year][property_name]
+            if not property_value or property_value in ["None", "null"]:
+                    continue
+            log_file.write(
+                f"ES: = = = = = = = = = = = k[{i}] = = = = = = = = = = =\n")
+            log_file.write(e['_source']['text'])
+            log_file.write("\n")
             extra_information_list.append(f"{property_name}是{property_value}")
+            now_try += 1
+            if now_try>max_try:
+                break
     except:
         log_file.write("数据库暂未录入\n")
         
@@ -140,10 +153,12 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
 
     log_file.write("= = AnswerGeneration = = \n")
     extra_information = "\n".join(extra_information_list)
+    log_file.write(extra_information+'\n')
     prompt = answer_generation_prompt(extra_information, question)
     response = encode(prompt, history=[])
     log_file.write(f"R:\n{response[0].text}\n\n")
-    return response[0].text
+    answer=response[0].text
+    return answer
 
 
 # import time
@@ -182,7 +197,7 @@ with open("./logs/inference_main_log.txt", "w") as log_file, open("./logs/submis
     question_count = 0
     for question_line in qs_file:
         question_count += 1
-        if question_count<1430:
+        if question_count<1426:
             continue
         print("question_count:",question_count)
         question_dict = json.loads(question_line)
