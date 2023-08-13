@@ -142,10 +142,10 @@ with open('../../configs/server.json', 'r') as file:
 base_path = server_config["base_path"]
 model_path = os.path.join(base_path,server_config["models_path"]["text2vec"])
 print(model_path)
-port = server_config["port"]["text2vec"]
+# port = server_config["port"]["text2vec"]
 lora_path = ""
 
-f = Flow(port=port).add(
+f = Flow(port=50001).add(
     uses=Text2vecEncoder,
     uses_with={
         'model_name': model_path,

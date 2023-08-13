@@ -124,9 +124,9 @@ class ChatGLM2(Executor):
                     # history.append(self.pre_history["pickle"])
                     pass
 
-            print('---------prompt----------')
+            # print('---------prompt----------')
 
-            print(prompt)
+            # print(prompt)
 
             response, history = self.model.chat(
                 self.tokenizer, prompt, history=history, max_length=max_length, top_p=top_p, temperature=temperature)
@@ -134,19 +134,19 @@ class ChatGLM2(Executor):
             doc.text = response
             doc.tags['history'] = json.dumps(history, ensure_ascii=False)
 
-            print('--------response---------')
+            # print('--------response---------')
 
-            print(response)
+            # print(response)
 
-            print('----------end------------')
+            # print('----------end------------')
 
 with open('../../configs/server.json', 'r') as file:
     server_config = json.load(file)
 base_path = server_config["base_path"]
 model_path = os.path.join(base_path,server_config["models_path"]["chatglm2"])
-port = server_config["port"]["chatglm2"]
+# port = server_config["port"]["chatglm2"]
 lora_path = ""
-f = Flow(port=port).add(
+f = Flow(port=50002).add(
     uses=ChatGLM2,
     uses_with={
         'model_name': model_path,
