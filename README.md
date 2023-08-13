@@ -19,7 +19,7 @@
 <div align="center"><img src="http://kylinhub.oss-cn-shanghai.aliyuncs.com/uPic/CF.png" style="width=40%;"/></div>
 
 ### 模型 Model
-使用ChatGLM-6B模型进行微调，也可以使用base_model进行测试。
+使用[ChatGLM2-6B](https://huggingface.co/THUDM/chatglm2-6b)模型进行微调，也可以使用base_model进行测试。
 
 ```
 bash downloads/download_model.sh
