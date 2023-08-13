@@ -16,6 +16,7 @@ models/
 build/
 develop-eggs/
 dist/
+logs/
 eggs/
 .eggs/
 lib/
