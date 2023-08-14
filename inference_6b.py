@@ -73,7 +73,7 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
     if not uuid and entities[0][0] == '年':
         entities[0] = entities[0][1:]
         uuid, file_name = attain_uuid(entities, uuid_dict)
-        f.write(f"R:\n fixed company name {entities[0]}\n\n")
+        log_file.write(f"R:\n fixed company name {entities[0]}\n\n")
     if not uuid:
         log_file.write("未知公司不予作答\n")
         return ""
@@ -193,11 +193,11 @@ with open("./data/chatglm_llm_fintech_raw_dataset/name_map_crawl.json", "r") as 
 
 import time
 
-with open("./logs/inference_main_log.txt", "w") as log_file, open("./logs/submission_new_1.json", "w") as sm_file, open("./data/chatglm_llm_fintech_raw_dataset/test_questions.jsonl", "r") as qs_file:
+with open("./logs/inference_main_log_2.txt", "w") as log_file, open("./logs/submission_new_2.json", "w") as sm_file, open("./data/chatglm_llm_fintech_raw_dataset/test_questions.jsonl", "r") as qs_file:
     question_count = 0
     for question_line in qs_file:
         question_count += 1
-        if question_count<1426:
+        if question_count<1734:
             continue
         print("question_count:",question_count)
         question_dict = json.loads(question_line)
