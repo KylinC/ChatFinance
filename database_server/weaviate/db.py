@@ -78,19 +78,20 @@ if __name__ == "__main__":
     n = 30000
     skip = 0
 
-    TXT_DIRECTORY = "/home/kylin/workspace/ChatFinance/data/chatglm_llm_fintech_raw_dataset/alldata"
-    file_names = glob.glob(TXT_DIRECTORY + '/*')
-    for i, file_name in enumerate(file_names):
-        print(f"No.{i} insert_txt")
-        try:
-            insert_txt(file_name, uuid_dict)
-        except:
-            print(f"error: {file_name}")
-        if i >= n - 1:
-            break
+    # TXT_DIRECTORY = "/home/kylin/workspace/ChatFinance/data/chatglm_llm_fintech_raw_dataset/alldata"
+    # file_names = glob.glob(TXT_DIRECTORY + '/*')
+    # for i, file_name in enumerate(file_names):
+    #     print(f"No.{i} insert_txt")
+    #     try:
+    #         insert_txt(file_name, uuid_dict)
+    #     except:
+    #         print(f"error: {file_name}")
+    #     if i >= n - 1:
+    #         break
 
     TAB_DIRECTORY = "/home/kylin/workspace/ChatFinance/data/chatglm_llm_fintech_raw_dataset/alltable"
     file_names = glob.glob(TAB_DIRECTORY + '/*.cal')
+    print(file_names)
     for i, file_name in enumerate(file_names):
         if i < skip:
             continue

@@ -15,6 +15,10 @@ services:
       CLUSTER_HOSTNAME: 'node1'
     volumes:
       - weaviatedata:/var/lib/weaviate
+    deploy:
+      resources:
+        limits:
+          memory: 50g
 
 volumes:
   weaviatedata:
