@@ -5,7 +5,7 @@ from prompts.answer_generation import answer_generation_prompt
 from prompts.open_question import open_question_prompt
 from models_server.text2vec.jina_embedding import JinaEmbeddings
 
-from database_server.weaviate.db import insert_table_uuid
+from database_server.weaviate.db import insert_table_uuid,insert_txt_uuid
 
 from langchain.vectorstores import Weaviate
 from elasticsearch import Elasticsearch
@@ -67,6 +67,8 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
     # print("意图识别时间：",time.time()-initial_time)
 
     ############################ -> Entity Recognition
+    try_year_list = ["2021年","2022年"]
+
     log_file.write("= = 实体提取 = = \n")
     prompt = entity_recognition_prompt(question)
     response = encode(prompt, history=[])
@@ -77,7 +79,17 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
     if not uuid and entities[0][0] == '年':
         entities[0] = entities[0][1:]
         uuid, file_name = attain_uuid(entities, uuid_dict)
-        log_file.write(f"R:\n 修复公司名称： {entities[0]}\n\n")
+        log_file.write(f"R:\n 1)首字修复，修复公司名称： {entities[0]}\n\n")
+    # if not uuid:
+    #     for try_year in try_year_list:
+    #         old_year = entities[1]
+    #         entities[1] = try_year
+
+    #         uuid, file_name = attain_uuid(entities, uuid_dict)
+    #         if uuid:
+    #             log_file.write(f"R:\n 2)年份修复，{old_year} 改为 {entities[1]},uuid:{uuid}\n\n")
+    #             break
+    
     if not uuid:
         log_file.write("未知公司不予作答\n")
         return ""
@@ -88,44 +100,44 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
 
     ################################ -> ElasticSearch
     log_file.write("= = ElasticSearch = = \n")
-    index_name = f"{uuid}"
-    # index_name = "all_property"
-    try:
-        for word in entities:
-            replaced_question = question.replace(word, '')
+    # index_name = f"{uuid}"
+    # # index_name = "all_property"
+    # try:
+    #     for word in entities:
+    #         replaced_question = question.replace(word, '')
 
-        search_query = {
-            "query": {
-                "match": {
-                    "text": replaced_question
-                }
-            }
-        }
+    #     search_query = {
+    #         "query": {
+    #             "match": {
+    #                 "text": replaced_question
+    #             }
+    #         }
+    #     }
 
-        search_resp = es.search(index=index_name, body=search_query)
+    #     search_resp = es.search(index=index_name, body=search_query)
 
-        docs = search_resp["hits"]["hits"][:3]
+    #     docs = search_resp["hits"]["hits"][:3]
 
-        for i, e in enumerate(docs):
-            property_name = e['_source']['text']
-            company = crawl_name_dict[file_name]
-            year = file_name.split("__")[4]+"报"
-            property_value = crawl_dict[company][year][property_name]
-            # if not property_value or property_value in ["None", "null"]:
-            #     continue
-            log_file.write(
-                f"ES: = = = = = = = = = = = k[{i}] = = = = = = = = = = =\n")
-            log_file.write(e['_source']['text'])
-            log_file.write("\n")
-            extra_information_list.append(f"{property_name}是{property_value}")
-    except:
-        log_file.write("数据库暂未录入\n")
+    #     for i, e in enumerate(docs):
+    #         property_name = e['_source']['text']
+    #         company = crawl_name_dict[file_name]
+    #         year = file_name.split("__")[4]+"报"
+    #         property_value = crawl_dict[company][year][property_name]
+    #         # if not property_value or property_value in ["None", "null"]:
+    #         #     continue
+    #         log_file.write(
+    #             f"ES: = = = = = = = = = = = k[{i}] = = = = = = = = = = =\n")
+    #         log_file.write(e['_source']['text'])
+    #         log_file.write("\n")
+    #         extra_information_list.append(f"{property_name}是{property_value}")
+    # except:
+    #     log_file.write("数据库暂未录入\n")
         
         
     ##################################### -> Embedding 尝试注入
     if not extra_information_list:
     # if True:
-        log_file.write("= = EmbeddingInsert = = \n")
+        log_file.write("= = EmbeddingInsert(Table) = = \n")
         Embedding_Match = False
         if entities[1][-1]=="年":
             target_year = entities[1][:-1]
@@ -135,16 +147,34 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
         
         try: 
             target_dir = "/home/kylin/workspace/ChatFinance/data/chatglm_llm_fintech_raw_dataset/alltable"
-            pattern = rf'^{target_year}.*{target_name}.*\.cal$'
+            # pattern = rf'^{target_year}.*{target_name}.*\.cal$'
             
             pattern = os.path.join(target_dir, f"{target_year}*{target_name}*.cal")
             matched_files = [os.path.abspath(path) for path in glob.glob(pattern)]
-            insert_table_uuid(matched_files[0],uuid)
+            insert_table_uuid(matched_files[0],uuid,client,embedding)
             
-            log_file.write(f"搜索注入成功,匹配文件名字：{matched_files[0]}\n")
+            log_file.write(f"搜索Table注入成功,匹配文件名字：{matched_files[0]}\n")
             Embedding_Match = True
         except:
             log_file.write("搜索不到相关.cal文件\n")
+
+
+
+        # log_file.write("= = EmbeddingInsert(Txt) = = \n")
+        
+        # log_file.write(f"尝试搜索{target_year}*{target_name}*.txt\n")
+        
+        # try: 
+        #     target_dir = "/home/kylin/workspace/ChatFinance/data/chatglm_llm_fintech_raw_dataset/alldata"
+        #     # pattern = rf'^{target_year}.*{target_name}.*\.txt$'
+            
+        #     pattern = os.path.join(target_dir, f"{target_year}*{target_name}*.txt")
+        #     matched_files = [os.path.abspath(path) for path in glob.glob(pattern)]
+        #     insert_txt_uuid(matched_files[0],uuid,client,embedding)
+            
+        #     log_file.write(f"搜索Txt注入成功,匹配文件名字：{matched_files[0]}\n")
+        # except:
+        #     log_file.write("搜索不到相关.Txt文件\n")
 
     ##################################### -> Embedding Database
     if not extra_information_list and Embedding_Match:
