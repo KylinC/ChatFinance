@@ -68,6 +68,29 @@ def insert_table(path, uuid_dict):
         print(f"表格数据已注入{i}")
         texts = []
 
+def insert_table_uuid(path, uuid):
+    basename = os.path.basename(path).split('.')[0]
+
+    db = Weaviate(client=client, embedding=embedding,
+                  index_name=f"LangChain_{uuid}", text_key="text", by_text=False)
+    print(f"To insert -> {basename}")
+    print(f"index_name: {db._index_name}")
+
+    texts = []
+
+    with open(path, "r", encoding="utf-8") as f:
+        for i, line in enumerate(f):
+            if i > 0 and i % 1000 == 0:
+                db.add_texts(texts=texts)
+                # print(f"表格数据已注入{i}")
+                texts = []
+            if len(line) <= 1:
+                continue
+            texts.append(line[:-1])
+        db.add_texts(texts=texts)
+        print(f"表格数据已注入{i}")
+        texts = []
+
 
 if __name__ == "__main__":
     base_tokenizer_model = '/home/kylin/workspace/ChatFinance/models/text2vec-base-chinese-paraphrase'
