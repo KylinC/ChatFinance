@@ -34,6 +34,12 @@ bash downloads/download_model.sh
 bash downloads/download_data.sh
 ```
 
+### 训练 Training
+> 可以支持AMD ROCm 上的SFT
+
+```
+python sft/chatglm2_6b_sft_lora.py
+```
 
 ### 推理 Inference
 
