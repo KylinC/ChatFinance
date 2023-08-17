@@ -219,7 +219,7 @@ def generate(question, uuid_dict, crawl_dict, crawl_name_dict, es, log_file):
 embedding = JinaEmbeddings("127.0.0.1")
 client = weaviate.Client(
     url="http://localhost:50003",  # Replace with your endpoint
-    auth_client_secret=weaviate.AuthApiKey(api_key="shadowmotion-secret-key"))
+    auth_client_secret=weaviate.AuthApiKey(api_key="vdb-secret-key"))
 
 # print("向量库时间：",time.time()-initial_time)
 

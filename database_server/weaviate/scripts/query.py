@@ -1,5 +1,5 @@
 import sys  # noqa: E501
-# sys.path.append('/home/shadowmotion/Documents/code/demo/HRSSC')  # noqa: E501
+# sys.path.append('/home/vdb/Documents/code/demo/HRSSC')  # noqa: E501
 
 
 from langchain.vectorstores import Weaviate
