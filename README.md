@@ -7,7 +7,7 @@
     <a href="https://github.com/KylinC/ChatFinance"><img src="https://img.shields.io/badge/release-v0.0.1-blue" alt="GitHub version"></a>
     <a href="https://github.com/KylinC/ChatFinance"><img src="https://img.shields.io/badge/ROCm-v5.5-orange" alt="GitHub version"></a>
     <a href="https://github.com/KylinC/ChatFinance"><img src="https://img.shields.io/badge/elasticsearch-v8.9.0-yellowgreen" alt="GitHub version"></a>
-    <a href="https://github.com/KylinC/eMarkDown"><img src="https://img.shields.io/badge/weaviate-v1.19.5-lightgrey" alt="GitHub version"></a>
+    <a href="https://github.com/KylinC/eMarkDown"><img src="https://img.shields.io/badge/weaviate-v1.39.13-lightgrey" alt="GitHub version"></a>
   </p>
 </p>
 
