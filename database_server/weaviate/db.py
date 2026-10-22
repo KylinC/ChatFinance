@@ -12,7 +12,9 @@ import os
 
 client = weaviate.Client(
     url="http://localhost:50003",  # Replace with your endpoint
-    auth_client_secret=weaviate.AuthApiKey(api_key="shadowmotion-secret-key"))
+    auth_client_secret=weaviate.AuthApiKey(api_key="shadowmotion-secret-key"),
+    # Lets Weaviate (>= 1.38) attribute requests to ChatFinance.
+    additional_headers={"X-Weaviate-Client-Integration": "chatfinance/unknown"})
 
 embedding = JinaEmbeddings("127.0.0.1")
 
